@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title><%= title %></title>
+
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css">
+
+		<script defer src="https://use.fontawesome.com/releases/v5.0.7/js/all.js"></script>
+		<style>
+.center {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.is-paddingless-horizontal { padding-left: 0; padding-right: 0; }
+
+.grid {
+	display: grid;
+	grid-template-columns:
+		[xl-start] 1fr 1.5rem [md-start] minmax(0, 800px) [md-end] 1.5rem 1fr [xl-end];
+}
+
+.grid *  { grid-column: md; }
+.grid-xl { grid-column: xl; }
+
+@media (max-width: 672px) {
+	:root {
+		font-size: 90%;
+	}
+}
+		</style>
+	</head>
+
+	<body>
+		<section class="section is-paddingless-horizontal">
+			<div class="container grid">
+				<nav class="breadcrumb" aria-label="breadcrumbs">
+					<ul>
+						<li><a href="/">Home</a></li>
+						<li class="is-active"><a href="#" aria-current="page"><%= title %></a></li>
+					</ul>
+				</nav>
+			</div>
+		</section>
+
+		<section class="section is-paddingless-horizontal" style="padding-top: 0;">
+			<div class="container grid" style="max-width: 1024px;">
+				<div class="section is-paddingless-horizontal">
+					<h1 class="title is-2">
+						<%= title %>
+					</h1>
+					<h2 class="subtitle is-3 has-text-grey-light">
+						<%= subtitle %>
+					</h2>
+				</div>
+
+				<div class="content is-medium">
+                    <%- content %>
+				</div>
+			</div>
+		</section>
+	</body>
+</html>

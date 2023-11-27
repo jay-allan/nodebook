@@ -1,0 +1,47 @@
+{
+  "name": "nodebook",
+  "version": "0.1",
+  "description": "Minimal file-based blog engine",
+  "main": "dist/app.js",
+  "scripts": {
+    "dev": "concurrently \"tsc --watch\" \"nodemon dist/app.js\"",
+    "build": "tsc",
+    "test": "jest src",
+    "lint": "eslint --ext .js,.ts ./src",
+    "format": "prettier --config .prettierrc.json 'src/**/*.ts' --write",
+    "docs": "typedoc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sarky-de/nodebook.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sarky-de/nodebook/issues"
+  },
+  "homepage": "https://github.com/sarky-de/nodebook#readme",
+  "devDependencies": {
+    "@types/jest": "^27.0.3",
+    "@typescript-eslint/eslint-plugin": "^5.6.0",
+    "@typescript-eslint/parser": "^5.6.0",
+    "concurrently": "^6.4.0",
+    "eslint": "^8.4.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "jest": "^27.4.3",
+    "nodemon": "^2.0.15",
+    "prettier": "^2.5.1",
+    "ts-jest": "^27.1.0",
+    "typedoc": "^0.22.10"
+  },
+  "dependencies": {
+    "@types/ejs": "^3.1.5",
+    "@types/node": "^20.10.0",
+    "@types/polka": "^0.5.7",
+    "ejs": "^3.1.9",
+    "marked": "^10.0.0",
+    "polka": "^0.5.2",
+    "winston": "^3.11.0"
+  }
+}

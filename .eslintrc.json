@@ -1,0 +1,23 @@
+{
+    "env": {
+        "browser": true,
+        "commonjs": true,
+        "es2021": false
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "prettier"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": 13
+    },
+    "plugins": [
+        "@typescript-eslint",
+        "prettier"
+    ],
+    "rules": {
+        "prettier/prettier": 2
+    }
+}
