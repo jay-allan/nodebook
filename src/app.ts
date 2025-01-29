@@ -7,6 +7,8 @@ import hljs from 'highlight.js';
 import * as fsPromise from 'fs/promises';
 import * as ejs from 'ejs';
 import matter from 'gray-matter';
+import * as path from 'path';
+import * as fs from 'fs';
 
 const marked = new Marked(
     { async: true },
@@ -84,20 +86,26 @@ polka()
     })
     .get('/*', async (req, res) => {
         const urlParts = req.path.split('/');
-        const articleName = urlParts[1];
+        const fileName = urlParts[1];
         const isPreview = urlParts[2] === 'preview';
-        Logger.info(`Request received for article ${articleName} (preview mode: ${isPreview})`);
 
-        let html = "";
-        try {
-            html = await renderArticle(articleName, isPreview);
-        }
-        catch (err) {
-            Logger.error('Article not found: ' + req.path);
-            return (res.statusCode = 404, res.end("File not found"));
+        const filePath = path.join(__dirname, fileName);
+        if (fs.existsSync(filePath)) {
+            Logger.info(`Request received for existing file ${fileName}`);
+            res.end(fs.readFileSync(filePath));
+        } else {
+            Logger.info(`Request received for article ${fileName} (preview mode: ${isPreview})`);
+            let html = "";
+            try {
+                html = await renderArticle(fileName, isPreview);
+            }
+            catch (err) {
+                Logger.error('Article not found: ' + req.path);
+                return (res.statusCode = 404, res.end("File not found"));
+            }
+            servePage(res, html);
         }
 
-        servePage(res, html);
         Logger.info('Served ' + req.path);
     })
     .listen(3000, () => {
