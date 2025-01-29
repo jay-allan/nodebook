@@ -48,13 +48,26 @@ async function renderTemplate(templateName: string, data: ejs.Data): Promise<str
     return html;
 }
 
-async function renderArticle(articleName: string): Promise<string> {
+async function renderArticle(articleName: string, previewMode?: boolean): Promise<string> {
     Logger.info("Attempting to render article " + articleName);
     const articleFileContent = await readArticleFile(`articles/${articleName}.md`);
     const article = await parseMarkdown(articleFileContent);
-    const html = await renderTemplate('article',
-        { title: article.metadata.title, subtitle: 'Really, just a test', content: article.html });
-    return html;
+    let articleVisible = false;
+    if (!previewMode) {
+        const currentDate = new Date();
+        const articleDate = new Date(article.metadata.date);
+        const publishingDateReached = currentDate >= articleDate;
+        const isPublished = article.metadata.published === true;
+        articleVisible = publishingDateReached && isPublished;
+        Logger.info(`Article visibility: Date reached (${articleDate}): ${publishingDateReached}, Published: ${isPublished}`);
+    }
+    if (previewMode || articleVisible) {
+        const html = await renderTemplate('article',
+            { title: article.metadata.title, subtitle: 'Really, just a test', content: article.html });
+        return html;
+    } else {
+        throw Error("Article not found");
+    }
 }
 
 function servePage(res: any, html: string) {
@@ -70,12 +83,14 @@ polka()
         Logger.info('Served /');
     })
     .get('/*', async (req, res) => {
-        Logger.info("Request received for article " + req.path);
+        const urlParts = req.path.split('/');
+        const articleName = urlParts[1];
+        const isPreview = urlParts[2] === 'preview';
+        Logger.info(`Request received for article ${articleName} (preview mode: ${isPreview})`);
 
-        const articleName = req.path.substring(1);
         let html = "";
         try {
-            html = await renderArticle(articleName);
+            html = await renderArticle(articleName, isPreview);
         }
         catch (err) {
             Logger.error('Article not found: ' + req.path);
