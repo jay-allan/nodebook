@@ -105,9 +105,12 @@ export async function getAllArticleMetadata(): Promise<any[]> {
             articles.push({
                 id: articleData.metadata.id,
                 title: articleData.metadata.title,
+                date: new Date(articleData.metadata.date),
             });
         }
     }
+
+    articles.sort((a, b) => a.date > b.date ? -1 : 1);
 
     Logger.info(`${articles.length} article(s) found`);
     return articles;
