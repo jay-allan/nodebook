@@ -4,35 +4,69 @@ import { marked } from 'marked';
 import * as fsPromise from 'fs/promises';
 import * as ejs from 'ejs';
 
-async function readArticle(filePath: string): Promise<string> {
+marked.use({
+    async: true,
+});
+
+async function readArticleFile(articleFileName: string): Promise<string> {
+    Logger.info("Attempting to read file " + articleFileName);
     try {
         const fileContents: string =
-            await fsPromise.readFile(filePath, { encoding: 'utf8' });
+            await fsPromise.readFile(articleFileName, { encoding: 'utf8' });
         return fileContents;
     }
     catch (err) {
-        throw Error("Unable to read file " + filePath);
+        throw Error("Unable to read file " + articleFileName);
     }
 }
 
+async function parseMarkdown(markdown: string): Promise<string> {
+    Logger.info("Parsing markdown");
+    const html = await marked.parse(markdown);
+    return html;
+}
+
+async function renderTemplate(templateName: string, data: ejs.Data): Promise<string> {
+    Logger.info("Attempting to render template " + templateName);
+    const html = await ejs.renderFile(`templates/${templateName}.ejs`, data);
+    return html;
+}
+
+async function renderArticle(articleName: string): Promise<string> {
+    Logger.info("Attempting to render article " + articleName);
+    const articleFileContent = await readArticleFile(`articles/${articleName}.md`);
+    const articleContent = await parseMarkdown(articleFileContent);
+    const html = await renderTemplate('article',
+        { title: 'Test', subtitle: 'Really, just a test', content: articleContent });
+    return html;
+}
+
+function servePage(res: any, html: string) {
+    res.setHeader('Content-Type', 'text/html');
+    res.end(html);
+}
+
 polka()
-    .get('/articles/*', async (req, res) => {
-        let articleContent = "";
+    .get('/', async (req, res) => {
+        Logger.info("Request received for index");
+        const html = await renderTemplate('index', { title: 'Index' });
+        servePage(res, html);
+        Logger.info('Served /');
+    })
+    .get('/*', async (req, res) => {
+        Logger.info("Request received for article " + req.path);
+
+        const articleName = req.path.substring(1);
+        let html = "";
         try {
-            articleContent = await readArticle(req.path.substring(1) + '.md');
+            html = await renderArticle(articleName);
         }
         catch (err) {
-            Logger.error('File not found: ' + req.path);
+            Logger.error('Article not found: ' + req.path);
             return (res.statusCode = 404, res.end("File not found"));
         }
 
-        articleContent = marked.parse(articleContent);
-
-        const html = await ejs.renderFile('templates/article.ejs',
-            { title: 'Test', subtitle: 'Really, just a test', content: articleContent });
-
-        res.setHeader('Content-Type', 'text/html');
-        res.end(html);
+        servePage(res, html);
         Logger.info('Served ' + req.path);
     })
     .listen(3000, () => {
