@@ -2,6 +2,7 @@ import { Logger } from './Logger';
 import polka from 'polka';
 import { Marked } from 'marked';
 import { markedHighlight } from "marked-highlight";
+import { markedSmartypantsLite } from "marked-smartypants-lite";
 import hljs from 'highlight.js';
 import * as fsPromise from 'fs/promises';
 import * as ejs from 'ejs';
@@ -17,7 +18,8 @@ const marked = new Marked(
                 return resolve(result.value);
             });
         }
-    })
+    }),
+    markedSmartypantsLite()
 );
 
 async function readArticleFile(articleFileName: string): Promise<string> {

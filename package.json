@@ -43,6 +43,7 @@
     "highlight.js": "^11.11.1",
     "marked": "^10.0.0",
     "marked-highlight": "^2.2.1",
+    "marked-smartypants-lite": "^1.0.2",
     "polka": "^0.5.2",
     "semver": "^7.6.3",
     "simple-update-notifier": "^2.0.0",
