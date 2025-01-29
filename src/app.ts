@@ -6,6 +6,7 @@ import { markedSmartypantsLite } from "marked-smartypants-lite";
 import hljs from 'highlight.js';
 import * as fsPromise from 'fs/promises';
 import * as ejs from 'ejs';
+import matter from 'gray-matter';
 
 const marked = new Marked(
     { async: true },
@@ -34,10 +35,11 @@ async function readArticleFile(articleFileName: string): Promise<string> {
     }
 }
 
-async function parseMarkdown(markdown: string): Promise<string> {
+async function parseMarkdown(markdown: string): Promise<{ html: string, metadata: any}> {
     Logger.info("Parsing markdown");
-    const html = await marked.parse(markdown);
-    return html;
+    const parsed = matter(markdown);
+    const html = await marked.parse(parsed.content);
+    return { html, metadata: parsed.data };
 }
 
 async function renderTemplate(templateName: string, data: ejs.Data): Promise<string> {
@@ -49,9 +51,9 @@ async function renderTemplate(templateName: string, data: ejs.Data): Promise<str
 async function renderArticle(articleName: string): Promise<string> {
     Logger.info("Attempting to render article " + articleName);
     const articleFileContent = await readArticleFile(`articles/${articleName}.md`);
-    const articleContent = await parseMarkdown(articleFileContent);
+    const article = await parseMarkdown(articleFileContent);
     const html = await renderTemplate('article',
-        { title: 'Test', subtitle: 'Really, just a test', content: articleContent });
+        { title: article.metadata.title, subtitle: 'Really, just a test', content: article.html });
     return html;
 }
 

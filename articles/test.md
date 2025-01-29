@@ -1,3 +1,8 @@
+---
+title: "Test Article"
+date: "2025-01-29"
+published: true
+---
 # h1 Heading 8-)
 
 ## h2 Heading
