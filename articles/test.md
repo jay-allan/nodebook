@@ -1,4 +1,5 @@
 ---
+id: "test"
 title: "Test Article"
 date: "2025-01-29"
 published: true

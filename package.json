@@ -4,7 +4,7 @@
   "description": "Minimal file-based blog engine",
   "main": "dist/app.js",
   "scripts": {
-    "dev": "concurrently \"tsc --watch\" \"nodemon dist/app.js\"",
+    "dev": "BASE_PATH=. concurrently \"tsc --watch\" \"nodemon dist/app.js\"",
     "build": "tsc",
     "test": "jest src",
     "lint": "eslint --ext .js,.ts ./src",

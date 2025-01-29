@@ -8,6 +8,16 @@
             </div>
         </div>
     </section>
+
+    <section class="section is-paddingless-horizontal" style="padding-top: 0;">
+        <div class="container grid" style="max-width: 1024px;">
+            <div class="section is-paddingless-horizontal">
+                <% articles.forEach(article => { %>
+                <a href="<%= article.id %>"><h2 class="subtitle is-3"><%= article.title %></h2></a>
+                <% }) %>
+            </div>
+        </div>
+    </section>
 </body>
 
 <%- include('footer.ejs') %>

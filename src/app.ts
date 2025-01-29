@@ -10,6 +10,9 @@ import matter from 'gray-matter';
 import * as path from 'path';
 import * as fs from 'fs';
 
+const BASE_PATH = process.env.BASE_PATH ? path.resolve(process.env.BASE_PATH) : __dirname;
+Logger.info(`Application base path: ${BASE_PATH}`);
+
 const marked = new Marked(
     { async: true },
     markedHighlight({
@@ -37,9 +40,10 @@ async function readArticleFile(articleFileName: string): Promise<string> {
     }
 }
 
-async function parseMarkdown(markdown: string): Promise<{ html: string, metadata: any}> {
+async function parseArticleFileContent(markdown: string): Promise<{ html: string, metadata: any}> {
     Logger.info("Parsing markdown");
     const parsed = matter(markdown);
+    Logger.info(`Extracted Metadata: ${JSON.stringify(parsed.data)}`);
     const html = await marked.parse(parsed.content);
     return { html, metadata: parsed.data };
 }
@@ -50,18 +54,27 @@ async function renderTemplate(templateName: string, data: ejs.Data): Promise<str
     return html;
 }
 
+async function getArticleData(articleName: string): Promise<{ html: string, metadata: any }> {
+    const articleFileContent = await readArticleFile(`articles/${articleName}.md`);
+    const article = await parseArticleFileContent(articleFileContent);
+    return article;
+}
+
+function isArticleVisible(article: any): boolean {
+    const currentDate = new Date();
+    const articleDate = new Date(article.metadata.date);
+    const isDateReached = currentDate >= articleDate;
+    const isPublished = article.metadata.published === true;
+    Logger.info(`Article visibility: Date reached (${articleDate}): ${isDateReached}, Published: ${isPublished}`);
+    return isDateReached && isPublished
+}
+
 async function renderArticle(articleName: string, previewMode?: boolean): Promise<string> {
     Logger.info("Attempting to render article " + articleName);
-    const articleFileContent = await readArticleFile(`articles/${articleName}.md`);
-    const article = await parseMarkdown(articleFileContent);
+    const article = await getArticleData(articleName);
     let articleVisible = false;
     if (!previewMode) {
-        const currentDate = new Date();
-        const articleDate = new Date(article.metadata.date);
-        const publishingDateReached = currentDate >= articleDate;
-        const isPublished = article.metadata.published === true;
-        articleVisible = publishingDateReached && isPublished;
-        Logger.info(`Article visibility: Date reached (${articleDate}): ${publishingDateReached}, Published: ${isPublished}`);
+        articleVisible = isArticleVisible(article);
     }
     if (previewMode || articleVisible) {
         const html = await renderTemplate('article',
@@ -77,10 +90,33 @@ function servePage(res: any, html: string) {
     res.end(html);
 }
 
+async function getAllArticleMetadata(): Promise<any[]> {
+    const articlesDir = path.join(BASE_PATH, 'articles');
+    Logger.info(`Attempting to retrieve list of articles at ${articlesDir}`);
+
+    const files = await fsPromise.readdir(articlesDir);
+    const articles = [];
+    for (const file of files) {
+        if (path.extname(file) !== '.md') {
+            continue;
+        }
+
+        const filePath = path.parse(file);
+        const articleData = await getArticleData(filePath.name);
+        if (isArticleVisible(articleData)) {
+            articles.push({ id: articleData.metadata.id, title: articleData.metadata.title });
+        }
+    }
+
+    Logger.info(`${articles.length} article(s) found`);
+    return articles;
+}
+
 polka()
     .get('/', async (req, res) => {
         Logger.info("Request received for index");
-        const html = await renderTemplate('index', { title: 'Index' });
+        const articles = await getAllArticleMetadata();
+        const html = await renderTemplate('index', { title: 'Index', articles });
         servePage(res, html);
         Logger.info('Served /');
     })
@@ -89,7 +125,7 @@ polka()
         const fileName = urlParts[1];
         const isPreview = urlParts[2] === 'preview';
 
-        const filePath = path.join(__dirname, fileName);
+        const filePath = path.join(BASE_PATH, fileName);
         if (fs.existsSync(filePath)) {
             Logger.info(`Request received for existing file ${fileName}`);
             res.end(fs.readFileSync(filePath));
