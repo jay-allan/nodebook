@@ -1,12 +1,24 @@
 import { Logger } from './Logger';
 import polka from 'polka';
-import { marked } from 'marked';
+import { Marked } from 'marked';
+import { markedHighlight } from "marked-highlight";
+import hljs from 'highlight.js';
 import * as fsPromise from 'fs/promises';
 import * as ejs from 'ejs';
 
-marked.use({
-    async: true,
-});
+const marked = new Marked(
+    { async: true },
+    markedHighlight({
+        async: true,
+        highlight(code, lang, info): Promise<string> {
+            return new Promise((resolve, reject) => {
+                const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+                const result = hljs.highlight(code, { language });
+                return resolve(result.value);
+            });
+        }
+    })
+);
 
 async function readArticleFile(articleFileName: string): Promise<string> {
     Logger.info("Attempting to read file " + articleFileName);
