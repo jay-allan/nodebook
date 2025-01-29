@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title><%= title %></title>
+
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css">
+
+		<script defer src="https://use.fontawesome.com/releases/v5.0.7/js/all.js"></script>
+		<style>
+.center {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.is-paddingless-horizontal { padding-left: 0; padding-right: 0; }
+
+.grid {
+	display: grid;
+	grid-template-columns:
+		[xl-start] 1fr 1.5rem [md-start] minmax(0, 800px) [md-end] 1.5rem 1fr [xl-end];
+}
+
+.grid *  { grid-column: md; }
+.grid-xl { grid-column: xl; }
+
+@media (max-width: 672px) {
+	:root {
+		font-size: 90%;
+	}
+}
+		</style>
+	</head>
