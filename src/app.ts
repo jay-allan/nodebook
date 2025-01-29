@@ -2,7 +2,6 @@ import { Logger } from './Logger';
 import polka from 'polka';
 import { Marked } from 'marked';
 import { markedHighlight } from "marked-highlight";
-import { markedSmartypantsLite } from "marked-smartypants-lite";
 import hljs from 'highlight.js';
 import * as fsPromise from 'fs/promises';
 import * as ejs from 'ejs';
@@ -25,10 +24,9 @@ const marked = new Marked(
             });
         }
     }),
-    markedSmartypantsLite()
 );
 
-async function readArticleFile(articleFileName: string): Promise<string> {
+export async function readArticleFile(articleFileName: string): Promise<string> {
     Logger.info("Attempting to read file " + articleFileName);
     try {
         const fileContents: string =
@@ -40,7 +38,7 @@ async function readArticleFile(articleFileName: string): Promise<string> {
     }
 }
 
-async function parseArticleFileContent(markdown: string): Promise<{ html: string, metadata: any}> {
+export async function parseArticleFileContent(markdown: string): Promise<{ html: string, metadata: any}> {
     Logger.info("Parsing markdown");
     const parsed = matter(markdown);
     Logger.info(`Extracted Metadata: ${JSON.stringify(parsed.data)}`);
@@ -48,19 +46,19 @@ async function parseArticleFileContent(markdown: string): Promise<{ html: string
     return { html, metadata: parsed.data };
 }
 
-async function renderTemplate(templateName: string, data: ejs.Data): Promise<string> {
+export async function renderTemplate(templateName: string, data: ejs.Data): Promise<string> {
     Logger.info("Attempting to render template " + templateName);
     const html = await ejs.renderFile(`templates/${templateName}.ejs`, data);
     return html;
 }
 
-async function getArticleData(articleName: string): Promise<{ html: string, metadata: any }> {
+export async function getArticleData(articleName: string): Promise<{ html: string, metadata: any }> {
     const articleFileContent = await readArticleFile(`articles/${articleName}.md`);
     const article = await parseArticleFileContent(articleFileContent);
     return article;
 }
 
-function isArticleVisible(article: any): boolean {
+export function isArticleVisible(article: any): boolean {
     const currentDate = new Date();
     const articleDate = new Date(article.metadata.date);
     const isDateReached = currentDate >= articleDate;
@@ -69,7 +67,7 @@ function isArticleVisible(article: any): boolean {
     return isDateReached && isPublished
 }
 
-async function renderArticle(articleName: string, previewMode?: boolean): Promise<string> {
+export async function renderArticle(articleName: string, previewMode?: boolean): Promise<string> {
     Logger.info("Attempting to render article " + articleName);
     const article = await getArticleData(articleName);
     let articleVisible = false;
@@ -90,7 +88,7 @@ function servePage(res: any, html: string) {
     res.end(html);
 }
 
-async function getAllArticleMetadata(): Promise<any[]> {
+export async function getAllArticleMetadata(): Promise<any[]> {
     const articlesDir = path.join(BASE_PATH, 'articles');
     Logger.info(`Attempting to retrieve list of articles at ${articlesDir}`);
 
@@ -104,7 +102,10 @@ async function getAllArticleMetadata(): Promise<any[]> {
         const filePath = path.parse(file);
         const articleData = await getArticleData(filePath.name);
         if (isArticleVisible(articleData)) {
-            articles.push({ id: articleData.metadata.id, title: articleData.metadata.title });
+            articles.push({
+                id: articleData.metadata.id,
+                title: articleData.metadata.title,
+            });
         }
     }
 
@@ -112,15 +113,23 @@ async function getAllArticleMetadata(): Promise<any[]> {
     return articles;
 }
 
+function getExecutionTime(startTime: number) {
+    const endTime = new Date().getTime();
+    const executionTime = ((endTime - startTime) / 1000).toFixed(1);
+    return executionTime;
+}
+
 polka()
     .get('/', async (req, res) => {
         Logger.info("Request received for index");
+        const startTime = new Date().getTime();
         const articles = await getAllArticleMetadata();
         const html = await renderTemplate('index', { title: 'Index', articles });
         servePage(res, html);
-        Logger.info('Served /');
+        Logger.info(`Served / in ${getExecutionTime(startTime)}s`);
     })
     .get('/*', async (req, res) => {
+        const startTime = new Date().getTime();
         const urlParts = req.path.split('/');
         const fileName = urlParts[1];
         const isPreview = urlParts[2] === 'preview';
@@ -141,8 +150,7 @@ polka()
             }
             servePage(res, html);
         }
-
-        Logger.info('Served ' + req.path);
+        Logger.info(`Served ${fileName} in ${getExecutionTime(startTime)}s`);
     })
     .listen(3000, () => {
         Logger.info('Server running on localhost:3000');
