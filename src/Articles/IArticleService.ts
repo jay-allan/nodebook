@@ -4,6 +4,7 @@ export class Article {
     private _title: string;
     private _published: boolean;
     private _rawContent: string;
+    private _parsedContent: string;
 
     constructor(
         id: string,
@@ -17,6 +18,7 @@ export class Article {
         this._title = title;
         this._published = published;
         this._rawContent = rawContent;
+        this._parsedContent = '';
     }
 
     get id(): string {
@@ -37,6 +39,14 @@ export class Article {
 
     get rawContent(): string {
         return this._rawContent;
+    }
+
+    get parsedContent(): string {
+        return this._parsedContent;
+    }
+
+    set parsedContent(value: string) {
+        this._parsedContent = value;
     }
 
     get isVisible(): boolean {

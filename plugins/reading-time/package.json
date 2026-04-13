@@ -1,0 +1,10 @@
+{
+    "name": "reading-time",
+    "version": "0.1",
+    "scripts": {
+      "build": "tsc -b"
+    },
+    "dependencies": {
+      "nodebook": "workspace:*"
+    }
+}

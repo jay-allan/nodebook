@@ -12,6 +12,8 @@ import { EjsTemplateRenderService } from './Rendering/EjsTemplateRenderService';
 
 import { IndexPageController } from './IndexPageController';
 import { ArticlePageController } from './ArticlePageController';
+import { PluginLoader } from './PluginLoader';
+import { EventChannel } from './Events/EventChannel';
 
 import polka from 'polka';
 import * as fs from 'fs';
@@ -36,24 +38,33 @@ function getExecutionTime(startTime: number) {
     return executionTime;
 }
 
-polka()
-    .get('/', async (req, res) => {
-        Logger.info('Request received for index');
-        const startTime = new Date().getTime();
-        await indexController.execute(req, res);
-        Logger.info(`Served / in ${getExecutionTime(startTime)}s`);
-    })
-    .get('/*', async (req, res) => {
-        const startTime = new Date().getTime();
-        const filePath = path.join(AppSettings.BASE_PATH, req.path);
-        if (fs.existsSync(filePath)) {
-            Logger.info(`Request received for existing file ${filePath}`);
-            res.end(fs.readFileSync(filePath));
-        } else {
-            await articleController.execute(req, res);
-        }
-        Logger.info(`Served ${filePath} in ${getExecutionTime(startTime)}s`);
-    })
-    .listen(AppSettings.PORT, () => {
-        Logger.info(`Server running on localhost:${AppSettings.PORT}`);
-    });
+(async () => {
+    const registrar = {
+        register: (event: string, handler: (payload: any) => any) =>
+            EventChannel.instance.register(event, handler)
+    };
+    const pluginLoader = new PluginLoader(registrar);
+    await pluginLoader.loadAll(path.join(__dirname, 'plugins'));
+
+    polka()
+        .get('/', async (req, res) => {
+            Logger.info('Request received for index');
+            const startTime = new Date().getTime();
+            await indexController.execute(req, res);
+            Logger.info(`Served / in ${getExecutionTime(startTime)}s`);
+        })
+        .get('/*', async (req, res) => {
+            const startTime = new Date().getTime();
+            const filePath = path.join(AppSettings.BASE_PATH, req.path);
+            if (fs.existsSync(filePath)) {
+                Logger.info(`Request received for existing file ${filePath}`);
+                res.end(fs.readFileSync(filePath));
+            } else {
+                await articleController.execute(req, res);
+            }
+            Logger.info(`Served ${filePath} in ${getExecutionTime(startTime)}s`);
+        })
+        .listen(AppSettings.PORT, () => {
+            Logger.info(`Server running on localhost:${AppSettings.PORT}`);
+        });
+})();
