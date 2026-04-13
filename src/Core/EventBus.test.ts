@@ -1,8 +1,9 @@
 import { EventBus } from './EventBus';
+import { EventHandler } from './EventDispatcher';
 
 class TestableEventBus extends EventBus {
-    public getCallbacks(event: string): Array<Function> {
-        let callbacks: Array<Function> = this._eventMap.get(event) ?? [];
+    public getCallbacks(event: string): Array<EventHandler> {
+        const callbacks: Array<EventHandler> = this._eventMap.get(event) ?? [];
         return callbacks;
     }
 }
@@ -12,7 +13,7 @@ test('Callback register returns success', () => {
     const eb = new TestableEventBus();
     let success = false;
 
-    success = eb.register(event, () => {});
+    success = eb.register(event, () => '');
     expect(success).toBe(true);
 });
 
@@ -22,6 +23,7 @@ test('Callback dispatches correctly', () => {
     let success = false;
     const fn = () => {
         success = true;
+        return '';
     };
 
     eb.register(event, fn);
@@ -36,9 +38,11 @@ test('Callbacks dispatch in registered order', () => {
     let success = false;
     const fn1 = () => {
         success = false;
+        return '';
     };
     const fn2 = () => {
         success = true;
+        return '';
     };
 
     eb.register(event, fn1);
@@ -54,6 +58,7 @@ test('Unregistred callbacks do not dispatch', () => {
     let success = false;
     const fn = () => {
         success = true;
+        return '';
     };
 
     eb.register(event, fn);
@@ -70,9 +75,11 @@ test('Dispatch does not affect other events', () => {
     let success = false;
     const fn1 = () => {
         success = true;
+        return '';
     };
     const fn2 = () => {
         success = false;
+        return '';
     };
 
     eb.register(event1, fn1);
@@ -85,7 +92,7 @@ test('Dispatch does not affect other events', () => {
 test('Callback registers correctly', () => {
     const event = 'TEST';
     const eb = new TestableEventBus();
-    const fn = () => {};
+    const fn = (): string => '';
 
     eb.register(event, fn);
 
@@ -96,7 +103,7 @@ test('Callback registers correctly', () => {
 test('Same Callback cannot register twice', () => {
     const event = 'TEST';
     const eb = new TestableEventBus();
-    const fn = () => {};
+    const fn = (): string => '';
 
     eb.register(event, fn);
     eb.register(event, fn);
@@ -108,8 +115,8 @@ test('Same Callback cannot register twice', () => {
 test('Multiple Callbacks can be added for same event', () => {
     const event = 'TEST';
     const eb = new TestableEventBus();
-    const fn1 = () => {};
-    const fn2 = () => {};
+    const fn1 = (): string => '';
+    const fn2 = (): string => '';
 
     eb.register(event, fn1);
     eb.register(event, fn2);
@@ -122,7 +129,7 @@ test('Same callback can be registered for multiple events', () => {
     const event1 = 'TEST1';
     const event2 = 'TEST2';
     const eb = new TestableEventBus();
-    const fn = () => {};
+    const fn = (): string => '';
 
     eb.register(event1, fn);
     eb.register(event2, fn);
@@ -136,7 +143,7 @@ test('Same callback can be registered for multiple events', () => {
 test('Callback unregister returns success', () => {
     const event = 'TEST';
     const eb = new TestableEventBus();
-    const fn = () => {};
+    const fn = (): string => '';
 
     eb.register(event, fn);
     const success = eb.unregister(event, fn);
@@ -146,7 +153,7 @@ test('Callback unregister returns success', () => {
 test('Callback unregisters correctly', () => {
     const event = 'TEST';
     const eb = new TestableEventBus();
-    const fn = () => {};
+    const fn = (): string => '';
 
     eb.register(event, fn);
     eb.unregister(event, fn);
@@ -158,8 +165,8 @@ test('Callback unregisters correctly', () => {
 test('Callback unregister does not affect other callbacks registered for event', () => {
     const event = 'TEST';
     const eb = new TestableEventBus();
-    const fn1 = () => {};
-    const fn2 = () => {};
+    const fn1 = (): string => '';
+    const fn2 = (): string => '';
 
     eb.register(event, fn1);
     eb.register(event, fn2);

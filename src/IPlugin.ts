@@ -1,5 +1,5 @@
 export interface IEventRegistrar {
-    register(event: string, handler: (payload: any) => any): boolean;
+    register<T>(event: string, handler: (payload: T) => string): boolean;
 }
 
 export interface IPlugin {

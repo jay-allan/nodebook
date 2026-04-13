@@ -25,7 +25,7 @@ if (DEBUG) {
 }
 
 export class Logger {
-    static info(message: string, ...args: any): void {
+    static info(message: string, ...args: unknown[]): void {
         /// #if DEBUG
         if (!DEBUG) {
             return;
@@ -35,7 +35,7 @@ export class Logger {
         /// #endif
     }
 
-    static warn(message: string, ...args: any): void {
+    static warn(message: string, ...args: unknown[]): void {
         /// #if DEBUG
         if (!DEBUG) {
             return;
@@ -45,7 +45,7 @@ export class Logger {
         /// #endif
     }
 
-    static error(message: string, ...args: any): void {
+    static error(message: string, ...args: unknown[]): void {
         /// #if DEBUG
         if (!DEBUG) {
             return;

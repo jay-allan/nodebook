@@ -1,6 +1,10 @@
 import { Article, IArticleService } from './Articles/IArticleService';
 import { IContentParserService } from './Parsing/IContentParserService';
-import { IHttpResponseController } from './IHttpResponseController';
+import type { ServerResponse } from 'http';
+import {
+    IHttpResponseController,
+    HttpRequest
+} from './IHttpResponseController';
 import { ITemplateRenderService } from './Rendering/ITemplateRenderService';
 import { Logger } from './Logger';
 import { EventChannel } from './Events/EventChannel';
@@ -21,7 +25,7 @@ export class ArticlePageController implements IHttpResponseController {
         this.parser = parser;
     }
 
-    public async execute(req: any, res: any) {
+    public async execute(req: HttpRequest, res: ServerResponse) {
         const urlParts = req.path.split('/');
         const articleName = urlParts[1];
         const isPreview = urlParts[2] === 'preview';
@@ -33,7 +37,7 @@ export class ArticlePageController implements IHttpResponseController {
             const html = await this.renderArticle(articleName, isPreview);
             res.setHeader('Content-Type', 'text/html');
             res.end(html);
-        } catch (err) {
+        } catch {
             Logger.error('Article not found: ' + req.path);
             res.statusCode = 404;
             res.end('File not found');

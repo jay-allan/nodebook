@@ -1,3 +1,10 @@
+import type { IncomingMessage, ServerResponse } from 'http';
+
+export interface HttpRequest extends IncomingMessage {
+    path: string;
+    params: Record<string, string>;
+}
+
 export interface IHttpResponseController {
-    execute(req: any, res: any): Promise<void>;
+    execute(req: HttpRequest, res: ServerResponse): Promise<void>;
 }

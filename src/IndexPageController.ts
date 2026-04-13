@@ -1,5 +1,9 @@
 import { IArticleService } from './Articles/IArticleService';
-import { IHttpResponseController } from './IHttpResponseController';
+import type { ServerResponse } from 'http';
+import {
+    IHttpResponseController,
+    HttpRequest
+} from './IHttpResponseController';
 import { ITemplateRenderService } from './Rendering/ITemplateRenderService';
 
 export class IndexPageController implements IHttpResponseController {
@@ -11,7 +15,7 @@ export class IndexPageController implements IHttpResponseController {
         this.renderer = renderer;
     }
 
-    public async execute(req: any, res: any) {
+    public async execute(req: HttpRequest, res: ServerResponse) {
         const articleList = await this.articles.getAllArticles(
             (a) => a.isVisible
         );

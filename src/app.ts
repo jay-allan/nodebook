@@ -40,7 +40,7 @@ function getExecutionTime(startTime: number) {
 
 (async () => {
     const registrar = {
-        register: (event: string, handler: (payload: any) => any) =>
+        register: <T>(event: string, handler: (payload: T) => string) =>
             EventChannel.instance.register(event, handler)
     };
     const pluginLoader = new PluginLoader(registrar);
@@ -62,7 +62,9 @@ function getExecutionTime(startTime: number) {
             } else {
                 await articleController.execute(req, res);
             }
-            Logger.info(`Served ${filePath} in ${getExecutionTime(startTime)}s`);
+            Logger.info(
+                `Served ${filePath} in ${getExecutionTime(startTime)}s`
+            );
         })
         .listen(AppSettings.PORT, () => {
             Logger.info(`Server running on localhost:${AppSettings.PORT}`);

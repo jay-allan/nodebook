@@ -1,7 +1,11 @@
 {
     "compilerOptions": {
+        "target": "ES2022",
+        "module": "commonjs",
+        "moduleResolution": "node10",
         "rootDir": "src",
         "outDir": "../../dist/plugins/reading-time",
+        "sourceMap": true,
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
         "strict": true,

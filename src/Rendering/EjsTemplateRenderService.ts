@@ -8,7 +8,10 @@ export class EjsTemplateRenderService implements ITemplateRenderService {
     private static TEMPLATE_DIR = path.join(AppSettings.BASE_PATH, 'templates');
     private static TEMPLATE_FILE_EXT = '.ejs';
 
-    public async render(templateName: string, data?: any): Promise<string> {
+    public async render(
+        templateName: string,
+        data?: Record<string, unknown>
+    ): Promise<string> {
         const templateFilePath =
             path.join(EjsTemplateRenderService.TEMPLATE_DIR, templateName) +
             EjsTemplateRenderService.TEMPLATE_FILE_EXT;

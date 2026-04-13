@@ -54,7 +54,7 @@ export class ArticleFileService implements IArticleService {
                 { encoding: 'utf8' }
             );
             return fileContents;
-        } catch (err) {
+        } catch {
             throw Error('Unable to read file ' + articleFileName);
         }
     }

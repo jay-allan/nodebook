@@ -1,3 +1,6 @@
 export interface ITemplateRenderService {
-    render(templateName: string, data?: any): Promise<string>;
+    render(
+        templateName: string,
+        data?: Record<string, unknown>
+    ): Promise<string>;
 }

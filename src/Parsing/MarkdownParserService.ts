@@ -11,8 +11,8 @@ export class MarkdownParserService implements IContentParserService {
             { async: true },
             markedHighlight({
                 async: true,
-                highlight(code, lang, info): Promise<string> {
-                    return new Promise((resolve, reject) => {
+                highlight(code, lang): Promise<string> {
+                    return new Promise((resolve) => {
                         const language = hljs.getLanguage(lang)
                             ? lang
                             : 'plaintext';

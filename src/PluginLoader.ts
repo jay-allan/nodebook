@@ -16,7 +16,9 @@ export class PluginLoader {
             return;
         }
 
-        const entries = await fs.promises.readdir(pluginsDir, { withFileTypes: true });
+        const entries = await fs.promises.readdir(pluginsDir, {
+            withFileTypes: true
+        });
         const dirs = entries.filter((e) => e.isDirectory());
 
         for (const dir of dirs) {
@@ -31,12 +33,13 @@ export class PluginLoader {
             return;
         }
         try {
-            // eslint-disable-next-line @typescript-eslint/no-var-requires
-            const mod = require(pluginPath);
+            const mod = await import(pluginPath);
             const PluginClass = mod.default;
             const plugin: IPlugin = new PluginClass();
             await plugin.initialize(this.registrar);
-            Logger.info(`Loaded plugin: ${plugin.name} v${plugin.version} — ${plugin.description}`);
+            Logger.info(
+                `Loaded plugin: ${plugin.name} v${plugin.version} — ${plugin.description}`
+            );
         } catch (err) {
             Logger.error(`Failed to load plugin from ${pluginPath}: ${err}`);
         }

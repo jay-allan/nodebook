@@ -5,7 +5,6 @@ import { Events } from './Events';
 export class EventChannel {
     private static _instance: EventBus;
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     private constructor() {}
 
     public static get instance(): EventBus {
@@ -20,7 +19,10 @@ export class EventChannel {
         return EventChannel.instance.dispatch<T>(event, payload);
     }
 
-    public static register(event: Events, handler: EventHandler): boolean {
+    public static register<T>(
+        event: Events,
+        handler: EventHandler<T>
+    ): boolean {
         return EventChannel.instance.register(event, handler);
     }
 }

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { EventDispatcher, EventHandler } from './EventDispatcher';
 
 export class EventBus implements EventDispatcher {
@@ -21,7 +20,7 @@ export class EventBus implements EventDispatcher {
         return results;
     }
 
-    register(event: string, handler: EventHandler): boolean {
+    register<T>(event: string, handler: EventHandler<T>): boolean {
         let handlers: Array<EventHandler>;
         if (!this._eventMap.has(event)) {
             handlers = new Array<EventHandler>();
@@ -30,30 +29,32 @@ export class EventBus implements EventDispatcher {
             handlers = this._eventMap.get(event)!;
         }
 
+        const h = handler as EventHandler;
         let exists = false;
         handlers.some((element) => {
-            if (element === handler) {
+            if (element === h) {
                 exists = true;
                 return exists;
             }
         });
 
         if (!exists) {
-            handlers.push(handler);
+            handlers.push(h);
         }
 
         return !exists;
     }
 
-    unregister(event: string, handler: EventHandler): boolean {
+    unregister<T>(event: string, handler: EventHandler<T>): boolean {
         if (!this._eventMap.has(event)) {
             return false;
         }
 
         const handlers = this._eventMap.get(event)!;
+        const h = handler as EventHandler;
         let found = false;
         for (let i = 0; i < handlers.length; i++) {
-            if (handlers[i] === handler) {
+            if (handlers[i] === h) {
                 found = true;
                 handlers.splice(i, 1);
                 break;

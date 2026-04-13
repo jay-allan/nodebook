@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "BASE_PATH=. concurrently \"tsc --build --watch\" \"nodemon dist/app.js\"",
     "build": "tsc --build",
-    "test": "jest src plugins",
-    "lint": "eslint --ext .js,.ts ./src",
+    "test": "jest src plugins --passWithNoTests",
+    "lint": "eslint ./src",
     "format": "prettier --config .prettierrc.json 'src/**/*.ts' --write",
     "docs": "typedoc"
   },
@@ -22,18 +22,18 @@
   },
   "homepage": "https://github.com/jay-allan/nodebook#readme",
   "devDependencies": {
-    "@types/jest": "^27.0.3",
-    "@typescript-eslint/eslint-plugin": "^5.6.0",
-    "@typescript-eslint/parser": "^5.6.0",
-    "concurrently": "^6.4.0",
-    "eslint": "^8.4.1",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-prettier": "^4.0.0",
-    "jest": "^27.4.3",
-    "nodemon": "^2.0.15",
-    "prettier": "^2.5.1",
-    "ts-jest": "^27.1.0",
-    "typedoc": "^0.22.10"
+    "@eslint/js": "^9.0.0",
+    "@types/jest": "^29.5.0",
+    "concurrently": "^9.0.0",
+    "eslint": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "jest": "^29.0.0",
+    "nodemon": "^3.0.0",
+    "prettier": "^3.0.0",
+    "ts-jest": "^29.0.0",
+    "typedoc": "^0.27.0",
+    "typescript": "^5.8.0",
+    "typescript-eslint": "^8.0.0"
   },
   "dependencies": {
     "@types/ejs": "^3.1.5",
