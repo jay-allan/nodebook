@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "rootDir": "src",
+        "outDir": "../../dist/plugins/reading-time",
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "strict": true,
+        "skipLibCheck": true,
+        "composite": true,
+    },
+    "include": [
+        "src/**/*",
+    ],
+    "references": [
+        { "path": "../../src" },
+    ],
+    "exclude": [
+        "src/**/*.test.ts",
+    ],
+    "compileOnSave": true
+}

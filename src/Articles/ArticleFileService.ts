@@ -46,7 +46,7 @@ export class ArticleFileService implements IArticleService {
         return article;
     }
 
-    private async readArticleFile(articleFileName: string): Promise<string> {
+    protected async readArticleFile(articleFileName: string): Promise<string> {
         Logger.info('Attempting to read file ' + articleFileName);
         try {
             const fileContents: string = await fsPromise.readFile(
@@ -59,7 +59,7 @@ export class ArticleFileService implements IArticleService {
         }
     }
 
-    private async parseArticleFileContent(
+    protected async parseArticleFileContent(
         articleFileContent: string
     ): Promise<Article> {
         const parsed = matter(articleFileContent);

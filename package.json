@@ -1,26 +1,26 @@
 {
   "name": "nodebook",
   "version": "0.1",
-  "description": "Minimal file-based blog engine",
+  "description": "Lightweight file-based blog engine",
   "main": "dist/app.js",
   "scripts": {
-    "dev": "BASE_PATH=. concurrently \"tsc --watch\" \"nodemon dist/app.js\"",
-    "build": "tsc",
-    "test": "jest src",
+    "dev": "BASE_PATH=. concurrently \"tsc --build --watch\" \"nodemon dist/app.js\"",
+    "build": "tsc --build",
+    "test": "jest src plugins",
     "lint": "eslint --ext .js,.ts ./src",
     "format": "prettier --config .prettierrc.json 'src/**/*.ts' --write",
     "docs": "typedoc"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sarky-de/nodebook.git"
+    "url": "git+https://github.com/jay-allan/nodebook.git"
   },
-  "author": "",
+  "author": "Jay Allan Jethwa",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/sarky-de/nodebook/issues"
+    "url": "https://github.com/jay-allan/nodebook/issues"
   },
-  "homepage": "https://github.com/sarky-de/nodebook#readme",
+  "homepage": "https://github.com/jay-allan/nodebook#readme",
   "devDependencies": {
     "@types/jest": "^27.0.3",
     "@typescript-eslint/eslint-plugin": "^5.6.0",

@@ -1,8 +1,10 @@
-import { IArticleService } from './Articles/IArticleService';
+import { Article, IArticleService } from './Articles/IArticleService';
 import { IContentParserService } from './Parsing/IContentParserService';
 import { IHttpResponseController } from './IHttpResponseController';
 import { ITemplateRenderService } from './Rendering/ITemplateRenderService';
 import { Logger } from './Logger';
+import { EventChannel } from './Events/EventChannel';
+import { Events } from './Events/Events';
 
 export class ArticlePageController implements IHttpResponseController {
     private articles: IArticleService;
@@ -49,11 +51,21 @@ export class ArticlePageController implements IHttpResponseController {
             articleVisible = article.isVisible;
         }
         if (previewMode || articleVisible) {
-            const renderedContent = await this.parser.parse(article.rawContent);
+            article.parsedContent = await this.parser.parse(article.rawContent);
+            const headerInserts: string[] = EventChannel.dispatch<Article>(
+                Events.RenderArticleHeader,
+                article
+            );
+            const footerInserts: string[] = EventChannel.dispatch<Article>(
+                Events.RenderArticleFooter,
+                article
+            );
             const html = await this.renderer.render('article', {
                 title: article.title,
                 subtitle: 'Really, just a test',
-                content: renderedContent
+                header: headerInserts.join(''),
+                content: article.parsedContent,
+                footer: footerInserts.join('')
             });
             return html;
         } else {
