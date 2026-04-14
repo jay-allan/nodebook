@@ -1,6 +1,6 @@
 {
   "name": "nodebook",
-  "version": "0.1",
+  "version": "0.1.0",
   "description": "Lightweight file-based blog engine",
   "main": "dist/app.js",
   "scripts": {
@@ -38,7 +38,7 @@
   "dependencies": {
     "@types/ejs": "^3.1.5",
     "@types/node": "^20.10.0",
-    "@types/polka": "^0.5.7",
+    "@types/polka": "0.5.7",
     "ejs": "^3.1.9",
     "gray-matter": "^4.0.3",
     "highlight.js": "^11.11.1",

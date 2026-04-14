@@ -1,0 +1,13 @@
+# Caddyfile — HTTPS reverse proxy for Nodebook
+#
+# Replace "yourdomain.com" with your actual domain name.
+# Caddy automatically obtains and renews a TLS certificate via Let's Encrypt.
+# HTTP traffic is automatically redirected to HTTPS.
+#
+# Prerequisites:
+#   - Your domain's DNS A record must point to this server's public IP.
+#   - Ports 80 and 443 must be reachable from the internet.
+
+yourdomain.com {
+    reverse_proxy nodebook:3001
+}

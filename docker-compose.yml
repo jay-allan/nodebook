@@ -1,0 +1,25 @@
+version: "3.9"
+
+# Generic standalone configuration.
+# Serves Nodebook with content (articles + templates) from a local directory.
+#
+# Usage:
+#   1. Create a ./content/articles/ directory and add your Markdown files.
+#   2. Optionally add ./content/templates/ to override the default templates.
+#   3. Run: docker compose up -d --build
+#
+# For production deployment with automatic git-sync and HTTPS, see README.md.
+
+services:
+  nodebook:
+    build: .
+    image: nodebook:latest
+    restart: unless-stopped
+    ports:
+      - "${HOST_PORT:-3001}:3001"
+    environment:
+      - PORT=3001
+      - BASE_PATH=/app/content
+      - NODE_ENV=production
+    volumes:
+      - ${CONTENT_PATH:-./content}:/app/content

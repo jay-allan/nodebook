@@ -1,0 +1,66 @@
+version: "3.9"
+
+# Production configuration.
+# Runs three services: the Nodebook app, a git-sync sidecar that automatically
+# pulls articles and templates from your private fork, and a Caddy reverse proxy
+# that handles HTTPS via Let's Encrypt.
+#
+# Prerequisites:
+#   1. Copy .env.example to .env and fill in your values.
+#   2. Generate an SSH deploy key and add the public half to your GitHub fork.
+#   3. Update Caddyfile with your domain name.
+#
+# Usage:
+#   docker compose -f docker-compose.production.yml up -d --build
+#
+# See README.md for full setup instructions.
+
+services:
+  nodebook:
+    build: .
+    image: nodebook:latest
+    restart: unless-stopped
+    # Not exposed directly to the host — Caddy proxies to it over the
+    # internal Docker network.
+    environment:
+      - PORT=3001
+      - BASE_PATH=/app/content
+      - NODE_ENV=production
+    volumes:
+      - content_data:/app/content
+    depends_on:
+      - git-sync
+
+  git-sync:
+    image: alpine/git:latest
+    restart: unless-stopped
+    environment:
+      - GIT_REPO=${GIT_REPO}
+      - GIT_BRANCH=${GIT_BRANCH:-main}
+      - SYNC_INTERVAL=${SYNC_INTERVAL:-60}
+    volumes:
+      - content_data:/content
+      - git_repo_cache:/repo
+      - ${SSH_KEY_PATH:-./deploy_key}:/root/.ssh/deploy_key:ro
+      - ./scripts/git-sync.sh:/scripts/git-sync.sh:ro
+    entrypoint: ["/bin/sh", "/scripts/git-sync.sh"]
+
+  caddy:
+    image: caddy:alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"   # HTTP/3
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data        # persists TLS certificates across restarts
+      - caddy_config:/config
+    depends_on:
+      - nodebook
+
+volumes:
+  content_data:     # shared between nodebook (read) and git-sync (write)
+  git_repo_cache:   # persists the cloned repo; restarts only need a fetch
+  caddy_data:
+  caddy_config:

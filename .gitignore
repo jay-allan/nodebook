@@ -80,6 +80,10 @@ jspm_packages/
 # dotenv environment variables file
 .env
 
+# SSH deploy key — never commit private keys
+deploy_key
+deploy_key.pub
+
 # next.js build output
 .next
 
